@@ -16,6 +16,8 @@
 
 from dpp import composite
 
+import pytest
+
 
 class Base(object):
     counter = 0
@@ -43,50 +45,62 @@ class Two(Base):
         Base.counter -= 2
 
 
-def test_composite_from_method_list():
-
-    @composite(method_list=['add', 'subtract'])
-    class CompositeFromMethodList:
-        pass
-
-    composite_object = CompositeFromMethodList()
-    composite_object.append(One())
-    composite_object.append(Two())
-    composite_object.add()
-    assert Base.counter == 3
-    composite_object.pop()
-    composite_object.subtract()
-    assert Base.counter == 2
+@pytest.fixture
+def composite_items():
+    Base.counter = 0  # Make sure that the initial state is always consistent
+    one = One()
+    two = Two()
+    return one, two
 
 
-def test_composite_from_interface():
+class TestCompositeUsage:
+    def test_composite_from_method_list(self, composite_items):
 
-    @composite(interface=Base)
-    class CompositeFromInterface:
-        pass
+        @composite(method_list=['add', 'subtract'])
+        class CompositeFromMethodList:
+            pass
 
-    composite_object = CompositeFromInterface()
+        one, two = composite_items
 
-    composite_object.append(One())
-    composite_object.append(Two())
-    composite_object.add()
-    assert Base.counter == 3
+        composite_object = CompositeFromMethodList()
+        composite_object.append(one)
+        composite_object.append(two)
+        composite_object.add()
+        assert Base.counter == 3
 
-    composite_object.pop()
-    composite_object.subtract()
-    assert Base.counter == 2
+        composite_object.pop()
+        composite_object.subtract()
+        assert Base.counter == 2
 
-def test_error_conditions():
+    def test_composite_from_interface(self, composite_items):
 
-    def wrong_container():
-        @composite(interface=self.Base, container=2)
+        @composite(interface=Base)
         class CompositeFromInterface:
             pass
 
-    def no_methods():
-        @composite()
-        class CompositeFromInterface:
-            pass
+        one, two = composite_items
 
-    #self.assertRaises(TypeError, wrong_container)
-    #self.assertRaises(TypeError, no_methods)
+        composite_object = CompositeFromInterface()
+
+        composite_object.append(one)
+        composite_object.append(two)
+        composite_object.add()
+        assert Base.counter == 3
+
+        composite_object.pop()
+        composite_object.subtract()
+        assert Base.counter == 2
+
+class TestCompositeFailures:
+    def test_wrong_container(self):
+        with pytest.raises(TypeError):
+            @composite(interface=Base, container=2)
+            class CompositeFromInterface:
+                pass
+
+
+    def test_no_interface_given(self):
+        with pytest.raises(TypeError):
+            @composite()
+            class CompositeFromInterface:
+                pass
