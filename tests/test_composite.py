@@ -91,6 +91,7 @@ class TestCompositeUsage:
         composite_object.subtract()
         assert Base.counter == 2
 
+
 class TestCompositeFailures:
     def test_wrong_container(self):
         with pytest.raises(TypeError):

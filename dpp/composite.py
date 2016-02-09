@@ -46,7 +46,13 @@ def composite(interface=None, method_list=None, container=list):
     def cls_decorator(cls):
         # Retrieve the base class of the composite. Inspect its methods and decide which ones will be overridden
         def no_special_no_private(x):
-            return inspect.ismethod(x) and not x.__name__.startswith('_')
+            # Here we have a nasty difference between python 2 and python 3.
+            # In python 2 x is considered to be an unbound method when coming from a class
+            # (ismethod(x) == True, isfunction(x) == False)
+            # In python 3 x is considered just a function when coming from a class
+            # (ismethod(x) == False, isfunction(x) == True)
+            # TODO : try to think about class methods and static methods behavior
+            return (inspect.ismethod(x) or inspect.isfunction(x))and not x.__name__.startswith('_')
 
         # Patch the behavior of each of the methods in the previous list. This is done associating an instance of the
         # descriptor below to any method that needs to be patched.
