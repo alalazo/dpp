@@ -5,7 +5,7 @@ dpp (Design Patterns in Python)
 |build-status| |license-status|
 
 
-.. |build-status| image:: https://travis-ci.org/alalazo/dpp.svg?branch=master
+.. |build-status| image:: https://travis-ci.org/alalazo/dpp.svg?branch=develop
     :target: https://travis-ci.org/alalazo/dpp
     :alt: Build status
 
