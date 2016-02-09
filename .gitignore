@@ -2,3 +2,4 @@
 .tox
 dpp.egg-info
 .idea
+.pylint.d

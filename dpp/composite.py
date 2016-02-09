@@ -13,7 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""
+Everything you need to employ the composite pattern
+"""
 from __future__ import absolute_import, print_function
 
 import inspect
@@ -39,28 +41,31 @@ def composite(interface=None, method_list=None, container=list):
     if not issubclass(container, collections.MutableSequence):
         raise TypeError("Container must fulfill the MutableSequence contract")
 
-    # Check if at least one of the 'interface' or the 'method_list' arguments are defined
+# Check if at least one of the 'interface' or the 'method_list' arguments are defined
     if interface is None and method_list is None:
         raise TypeError("Either 'interface' or 'method_list' must be defined on a call to composite")
 
     def cls_decorator(cls):
+        # pylint: disable=missing-docstring
         # Retrieve the base class of the composite. Inspect its methods and decide which ones will be overridden
-        def no_special_no_private(x):
+        def no_special_no_private(mthd):
             # Here we have a nasty difference between python 2 and python 3.
             # In python 2 x is considered to be an unbound method when coming from a class
             # (ismethod(x) == True, isfunction(x) == False)
             # In python 3 x is considered just a function when coming from a class
             # (ismethod(x) == False, isfunction(x) == True)
             # TODO : try to think about class methods and static methods behavior
-            return (inspect.ismethod(x) or inspect.isfunction(x))and not x.__name__.startswith('_')
+            return (inspect.ismethod(mthd) or inspect.isfunction(mthd)) and not mthd.__name__.startswith('_')
 
-        # Patch the behavior of each of the methods in the previous list. This is done associating an instance of the
-        # descriptor below to any method that needs to be patched.
+# Patch the behavior of each of the methods in the previous list. This is done associating an instance of the
+# descriptor below to any method that needs to be patched.
+
         class IterateOver(object):
             """
-            Decorator used to patch methods in a composite. It iterates over all the items in the instance containing the
-            associated attribute and calls for each of them an attribute with the same name
+            Decorator used to patch methods in a composite. It iterates over all the items in the instance containing
+            the associated attribute and calls for each of them an attribute with the same name
             """
+            # pylint: disable=too-few-public-methods
             def __init__(self, name, func=None):
                 self.name = name
                 self.func = func
@@ -85,28 +90,27 @@ def composite(interface=None, method_list=None, container=list):
             dictionary_for_type_call.update(method_list_dict)
         # Construct a dictionary with the methods inspected from the interface
         if interface is not None:
-            ##########
-            # python@2.7: interface_methods = {name: method for name, method in inspect.getmembers(interface, predicate=no_special_no_private)}
+            # {name: method for name, method in inspect.getmembers(interface, predicate=no_special_no_private)}
             interface_methods = {}
             for name, method in inspect.getmembers(interface, predicate=no_special_no_private):
                 interface_methods[name] = method
-            ##########
-            # python@2.7: interface_methods_dict = {name: IterateOver(name, method) for name, method in interface_methods.items()}
+
+            # {name: IterateOver(name, method) for name, method in interface_methods.items()}
             interface_methods_dict = {}
             for name, method in interface_methods.items():
                 interface_methods_dict[name] = IterateOver(name, method)
             ##########
             dictionary_for_type_call.update(interface_methods_dict)
         # Get the methods that are defined in the scope of the composite class and override any previous definition
-        ##########
-        # python@2.7: cls_method = {name: method for name, method in inspect.getmembers(cls, predicate=inspect.ismethod)}
+
+        # {name: method for name, method in inspect.getmembers(cls, predicate=inspect.ismethod)}
         cls_method = {}
         for name, method in inspect.getmembers(cls, predicate=inspect.ismethod):
             cls_method[name] = method
-        ##########
+
         dictionary_for_type_call.update(cls_method)
         # Generate the new class on the fly and return it
-        # FIXME : inherit from interface if we start to use ABC classes?
+        # TODO : inherit from interface if we start to use ABC classes?
         wrapper_class = type(cls.__name__, (cls, container), dictionary_for_type_call)
         return wrapper_class
 
