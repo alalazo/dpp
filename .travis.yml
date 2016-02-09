@@ -1,0 +1,21 @@
+sudo: false
+language: python
+python:
+  - "3.5"
+  - "3.4"
+  - "2.7"
+  - "2.6"
+
+# command to install dependencies
+install: pip install tox-travis
+
+# command to run tests
+script: tox
+
+# notifications:
+notifications:
+  email:
+    recipients:
+      - massimiliano.culpo@gmail.com
+    on_success: change
+    on_failure: always
