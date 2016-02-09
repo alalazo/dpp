@@ -2,9 +2,12 @@
 dpp (Design Patterns in Python)
 ===============================
 
-|license-status|
+|build-status| |license-status|
 
 
+.. |build-status| image:: https://travis-ci.org/alalazo/dpp.svg?branch=master
+    :target: https://travis-ci.org/alalazo/dpp
+    :alt: Build status
 
 .. |license-status| image:: https://img.shields.io/badge/license-Apache2.0-blue.svg
     :target: http://opensource.org/licenses/Apache2.0
