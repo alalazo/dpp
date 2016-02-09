@@ -1,4 +1,6 @@
-# dpp (Design Patterns in Python)
+===============================
+dpp (Design Patterns in Python)
+===============================
 
 |license-status|
 

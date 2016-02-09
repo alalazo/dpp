@@ -1,3 +1,4 @@
 .cache
 .tox
 dpp.egg-info
+.idea
