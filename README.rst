@@ -2,8 +2,12 @@
 dpp (Design Patterns in Python)
 ===============================
 
-|build-status| |license-status|
+|build-status| |coverage-status| |license-status|
 
+
+.. |coverage-status| image:: https://coveralls.io/repos/github/alalazo/dpp/badge.svg?branch=develop
+    :target: https://coveralls.io/github/alalazo/dpp?branch=develop
+    :alt: Coverage status
 
 .. |build-status| image:: https://travis-ci.org/alalazo/dpp.svg?branch=develop
     :target: https://travis-ci.org/alalazo/dpp
