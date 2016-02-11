@@ -41,7 +41,7 @@ def composite(interface=None, method_list=None, container=list):
     if not issubclass(container, collections.MutableSequence):
         raise TypeError("Container must fulfill the MutableSequence contract")
 
-# Check if at least one of the 'interface' or the 'method_list' arguments are defined
+    # Check if at least one of the 'interface' or the 'method_list' arguments are defined
     if interface is None and method_list is None:
         raise TypeError("Either 'interface' or 'method_list' must be defined on a call to composite")
 

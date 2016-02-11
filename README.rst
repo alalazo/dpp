@@ -1,6 +1,6 @@
-===============================
-dpp (Design Patterns in Python)
-===============================
+=========================
+Design Patterns in Python
+=========================
 
 |build-status| |coverage-status| |license-status|
 
