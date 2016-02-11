@@ -22,6 +22,10 @@ import pytest
 class Base(object):
     counter = 0
 
+    @classmethod
+    def reset(cls):
+        cls.counter = 0
+
     def add(self):
         raise NotImplemented('add not implemented')
 
@@ -47,7 +51,7 @@ class Two(Base):
 
 @pytest.fixture
 def composite_items():
-    Base.counter = 0  # Make sure that the initial state is always consistent
+    Base.reset()  # Make sure that the initial state is always consistent
     one = One()
     two = Two()
     return one, two

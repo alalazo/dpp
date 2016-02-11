@@ -18,6 +18,8 @@ Everything you need to employ the composite pattern
 """
 from __future__ import absolute_import, print_function
 
+from .inspection import is_private, is_special
+
 import inspect
 import collections
 import functools
@@ -55,16 +57,17 @@ def composite(interface=None, method_list=None, container=list):
             # In python 3 x is considered just a function when coming from a class
             # (ismethod(x) == False, isfunction(x) == True)
             # TODO : try to think about class methods and static methods behavior
-            return (inspect.ismethod(mthd) or inspect.isfunction(mthd)) and not mthd.__name__.startswith('_')
+            return (inspect.ismethod(mthd) or inspect.isfunction(mthd)) and (not is_special(mthd) and
+                                                                             not is_private(mthd))
 
-# Patch the behavior of each of the methods in the previous list. This is done associating an instance of the
-# descriptor below to any method that needs to be patched.
-
+        # Patch the behavior of each of the methods in the previous list. This is done associating an instance of the
+        # descriptor below to any method that needs to be patched.
         class IterateOver(object):
             """
             Decorator used to patch methods in a composite. It iterates over all the items in the instance containing
             the associated attribute and calls for each of them an attribute with the same name
             """
+
             # pylint: disable=too-few-public-methods
             def __init__(self, name, func=None):
                 self.name = name
@@ -105,7 +108,9 @@ def composite(interface=None, method_list=None, container=list):
 
         # {name: method for name, method in inspect.getmembers(cls, predicate=inspect.ismethod)}
         cls_method = {}
-        for name, method in inspect.getmembers(cls, predicate=inspect.ismethod):
+        for name, method in inspect.getmembers(
+                cls,
+                predicate=lambda item: inspect.ismethod(item) or inspect.isfunction(item)):
             cls_method[name] = method
 
         dictionary_for_type_call.update(cls_method)

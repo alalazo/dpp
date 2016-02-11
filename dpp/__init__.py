@@ -18,8 +18,6 @@ dpp : programming patterns made easy!
 """
 from .composite import composite
 
-
 __author__ = 'Massimiliano Culpo'
 __copyright__ = 'Copyright (c) 2016 Massimiliano Culpo'
 __license__ = 'Apache License Version 2.0'
-
