@@ -59,7 +59,6 @@ def composite_items():
 
 class TestCompositeUsage:
     def test_composite_from_method_list(self, composite_items):
-
         @composite(method_list=['add', 'subtract'])
         class CompositeFromMethodList:
             pass
@@ -77,7 +76,6 @@ class TestCompositeUsage:
         assert Base.counter == 2
 
     def test_composite_from_interface(self, composite_items):
-
         @composite(interface=Base)
         class CompositeFromInterface:
             pass
@@ -99,13 +97,14 @@ class TestCompositeUsage:
 class TestCompositeFailures:
     def test_wrong_container(self):
         with pytest.raises(TypeError):
+
             @composite(interface=Base, container=2)
             class CompositeFromInterface:
                 pass
 
-
     def test_no_interface_given(self):
         with pytest.raises(TypeError):
+
             @composite()
             class CompositeFromInterface:
                 pass

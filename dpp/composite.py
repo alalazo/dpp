@@ -18,11 +18,11 @@ Everything you need to employ the composite pattern
 """
 from __future__ import absolute_import, print_function
 
-from .inspection import is_private, is_special
-
 import inspect
 import collections
 import functools
+
+from .inspection import is_private, is_special
 
 
 def composite(interface=None, method_list=None, container=list):
@@ -64,7 +64,7 @@ def composite(interface=None, method_list=None, container=list):
         # descriptor below to any method that needs to be patched.
         class IterateOver(object):
             """
-            Decorator used to patch methods in a composite. It iterates over all the items in the instance containing
+            Descriptor used to patch methods in a composite. It iterates over all the items in the instance containing
             the associated attribute and calls for each of them an attribute with the same name
             """
 

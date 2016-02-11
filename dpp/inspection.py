@@ -29,6 +29,7 @@ def is_special(item):
     :param item: item to be inspected
     :return: True or False
     """
+    # TODO : this matches any __<name>__ not only the ones that are part of a protocol in the language
     name = getattr(item, '__name__')
     if _IS_SPECIAL_PATTERN.match(name):
         return True
