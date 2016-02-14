@@ -56,9 +56,7 @@ def composite(interface=None, method_list=None, container=list):
             # (ismethod(x) == True, isfunction(x) == False)
             # In python 3 x is considered just a function when coming from a class
             # (ismethod(x) == False, isfunction(x) == True)
-            # TODO : try to think about class methods and static methods behavior
-            return (inspect.ismethod(mthd) or inspect.isfunction(mthd)) and (not is_special(mthd) and
-                                                                             not is_private(mthd))
+            return not is_special(mthd) and not is_private(mthd)
 
         # Patch the behavior of each of the methods in the previous list. This is done associating an instance of the
         # descriptor below to any method that needs to be patched.
@@ -93,20 +91,21 @@ def composite(interface=None, method_list=None, container=list):
             dictionary_for_type_call.update(method_list_dict)
         # Construct a dictionary with the methods inspected from the interface
         if interface is not None:
-            # {name: method for name, method in inspect.getmembers(interface, predicate=no_special_no_private)}
-            interface_methods = {}
-            for name, method in inspect.getmembers(interface, predicate=no_special_no_private):
-                interface_methods[name] = method
-
+            # If an interface is passed, class methods and static methods should not be inserted in the list
+            # of methods to be wrapped
+            interface_methods = inspect.classify_class_attrs(interface)  # Get all the class attributes
+            interface_methods = [x for x in interface_methods if x.kind == 'method']  # Select only methods
+            interface_methods = [x for x in interface_methods if no_special_no_private(x.object)]
             # {name: IterateOver(name, method) for name, method in interface_methods.items()}
-            interface_methods_dict = {}
-            for name, method in interface_methods.items():
-                interface_methods_dict[name] = IterateOver(name, method)
-            ##########
+            interface_methods_dict = dict(
+                (item.name, IterateOver(item.name, item.object)) for item in interface_methods
+            )
             dictionary_for_type_call.update(interface_methods_dict)
         # Get the methods that are defined in the scope of the composite class and override any previous definition
 
         # {name: method for name, method in inspect.getmembers(cls, predicate=inspect.ismethod)}
+        #cls_method = inspect.classify_class_attrs(cls)
+        #cls_method = [x for x in cls_method if x.kind == 'method']
         cls_method = {}
         for name, method in inspect.getmembers(
                 cls,
