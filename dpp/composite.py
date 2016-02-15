@@ -40,7 +40,7 @@ def composite(interface=None, method_list=None, container=list):
     # Check if container fulfills the MutableSequence contract and raise an exception if it doesn't
     # The patched class returned by the decorator will inherit from the container class to expose the
     # interface needed to manage objects composition
-    if not issubclass(container, collections.MutableSequence):
+    if not inspect.isclass(container) or not issubclass(container, collections.MutableSequence):
         raise TypeError("Container must fulfill the MutableSequence contract")
 
     # Check if at least one of the 'interface' or the 'method_list' arguments are defined
