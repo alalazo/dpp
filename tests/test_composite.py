@@ -32,6 +32,9 @@ class Base(object):
     def subtract(self):
         raise NotImplemented('subtract not implemented')
 
+    @staticmethod
+    def get_number():
+        return Base.counter
 
 class One(Base):
     def add(self):
@@ -60,8 +63,10 @@ def composite_items():
 class TestCompositeUsage:
     def test_composite_from_method_list(self, composite_items):
         @composite(method_list=['add', 'subtract'])
-        class CompositeFromMethodList:
-            pass
+        class CompositeFromMethodList(object):
+            @staticmethod
+            def get_number():
+                return 0
 
         one, two = composite_items
 
@@ -75,9 +80,11 @@ class TestCompositeUsage:
         composite_object.subtract()
         assert Base.counter == 2
 
+        assert CompositeFromMethodList.get_number() == 0
+
     def test_composite_from_interface(self, composite_items):
         @composite(interface=Base)
-        class CompositeFromInterface:
+        class CompositeFromInterface(object):
             pass
 
         one, two = composite_items
@@ -93,6 +100,9 @@ class TestCompositeUsage:
         composite_object.subtract()
         assert Base.counter == 2
 
+        assert CompositeFromInterface.get_number() == 2
+        assert isinstance(composite_object, Base)
+        assert issubclass(CompositeFromInterface, Base)
 
 class TestCompositeFailures:
     def test_wrong_container(self):

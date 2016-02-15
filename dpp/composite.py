@@ -90,6 +90,7 @@ def composite(interface=None, method_list=None, container=list):
                 method_list_dict[name] = IterateOver(name)
             dictionary_for_type_call.update(method_list_dict)
         # Construct a dictionary with the methods inspected from the interface
+        bases = (cls, container)
         if interface is not None:
             # If an interface is passed, class methods and static methods should not be inserted in the list
             # of methods to be wrapped
@@ -101,6 +102,8 @@ def composite(interface=None, method_list=None, container=list):
                 (item.name, IterateOver(item.name, item.object)) for item in interface_methods
             )
             dictionary_for_type_call.update(interface_methods_dict)
+            bases = (cls, interface, container)
+
         # Get the methods that are defined in the scope of the composite class and override any previous definition
 
         # {name: method for name, method in inspect.getmembers(cls, predicate=inspect.ismethod)}
@@ -115,7 +118,7 @@ def composite(interface=None, method_list=None, container=list):
         dictionary_for_type_call.update(cls_method)
         # Generate the new class on the fly and return it
         # TODO : inherit from interface if we start to use ABC classes?
-        wrapper_class = type(cls.__name__, (cls, container), dictionary_for_type_call)
+        wrapper_class = type(cls.__name__, bases, dictionary_for_type_call)
         return wrapper_class
 
     return cls_decorator
