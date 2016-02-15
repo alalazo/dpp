@@ -104,20 +104,7 @@ def composite(interface=None, method_list=None, container=list):
             dictionary_for_type_call.update(interface_methods_dict)
             bases = (cls, interface, container)
 
-        # Get the methods that are defined in the scope of the composite class and override any previous definition
-
-        # {name: method for name, method in inspect.getmembers(cls, predicate=inspect.ismethod)}
-        #cls_method = inspect.classify_class_attrs(cls)
-        #cls_method = [x for x in cls_method if x.kind == 'method']
-        cls_method = {}
-        for name, method in inspect.getmembers(
-                cls,
-                predicate=lambda item: inspect.ismethod(item) or inspect.isfunction(item)):
-            cls_method[name] = method
-
-        dictionary_for_type_call.update(cls_method)
         # Generate the new class on the fly and return it
-        # TODO : inherit from interface if we start to use ABC classes?
         wrapper_class = type(cls.__name__, bases, dictionary_for_type_call)
         return wrapper_class
 
