@@ -78,13 +78,13 @@ def composite(interface=None, method_list=None, container=list, reductions=None)
                 self.reductions = reductions if reductions is not None else {}
 
             def __get__(self, instance, owner):
-                reduce = self.reductions.get(self.name, None)
+                reduction_function = self.reductions.get(self.name, None)
 
                 def getter(*args, **kwargs):
                     for item in instance:
                         value = getattr(item, self.name)(*args, **kwargs)
-                        if reduce is not None:
-                            value = reduce(value)
+                        if reduction_function is not None:
+                            value = reduction_function(value)
                     return value
 
                 # If we are using this descriptor to wrap a method from an interface, then we must conditionally
