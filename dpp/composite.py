@@ -25,16 +25,18 @@ import functools
 from .inspection import is_private, is_special
 
 
-def composite(interface=None, method_list=None, container=list):
+def composite(interface=None, method_list=None, container=list, reductions=None):
     """
     Returns a class decorator that patches a class adding all the methods it needs to be a composite for a given
     interface.
 
     :param interface: class exposing the interface to which the composite object must conform. Only non-private and
-    non-special methods will be taken into account
+    non-special instance methods will be patched
     :param method_list: names of methods that should be part of the composite
     :param container: container for the composite object (default = list). Must fulfill the MutableSequence contract.
     The composite class will expose the container API to manage object composition
+    :param reductions: dictionary that maps method names to reduction function
+
     :return: class decorator
     """
     # Check if container fulfills the MutableSequence contract and raise an exception if it doesn't
@@ -46,6 +48,9 @@ def composite(interface=None, method_list=None, container=list):
     # Check if at least one of the 'interface' or the 'method_list' arguments are defined
     if interface is None and method_list is None:
         raise TypeError("Either 'interface' or 'method_list' must be defined on a call to composite")
+
+    if reductions is not None and not isinstance(reductions, dict):
+        raise TypeError("'reduction' should be a dictionary mapping method names to reduction functions")
 
     def cls_decorator(cls):
         # pylint: disable=missing-docstring
@@ -67,14 +72,21 @@ def composite(interface=None, method_list=None, container=list):
             """
 
             # pylint: disable=too-few-public-methods
-            def __init__(self, name, func=None):
+            def __init__(self, name, func=None, reductions=reductions):
                 self.name = name
                 self.func = func
+                self.reductions = reductions if reductions is not None else {}
 
             def __get__(self, instance, owner):
+                reduce = self.reductions.get(self.name, None)
+
                 def getter(*args, **kwargs):
                     for item in instance:
-                        getattr(item, self.name)(*args, **kwargs)
+                        value = getattr(item, self.name)(*args, **kwargs)
+                        if reduce is not None:
+                            value = reduce(value)
+                    return value
+
                 # If we are using this descriptor to wrap a method from an interface, then we must conditionally
                 # use the `functools.wraps` decorator to set the appropriate fields.
                 if self.func is not None:
@@ -82,7 +94,7 @@ def composite(interface=None, method_list=None, container=list):
                 return getter
 
         dictionary_for_type_call = {}
-        # Construct a dictionary with the methods explicitly passed as name
+        # Construct a dictionary with the methods explicitly passed as names
         if method_list is not None:
             # python@2.7: method_list_dict = {name: IterateOver(name) for name in method_list}
             method_list_dict = {}

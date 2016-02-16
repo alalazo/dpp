@@ -36,6 +36,7 @@ class Base(object):
     def get_number():
         return Base.counter
 
+
 class One(Base):
     def add(self):
         Base.counter += 1
