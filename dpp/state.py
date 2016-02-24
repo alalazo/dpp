@@ -18,7 +18,24 @@ State pattern and common variations
 """
 
 
-def fsm(interface=None, method_list=None):
+def fsm(interface=None, method_list=None, states=None):
     def decorator(obj):
         return obj
     return decorator
+
+
+class State(object):
+    def __init__(self, cls, *args, initial=False):
+        self.data = cls(*args)
+
+    def __get__(self, instance, owner):
+        pass
+
+
+class Event(object):
+    def __init__(self, current, next):
+        self.current = current
+        self.next = next
+
+    def __get__(self, instance, owner):
+        pass

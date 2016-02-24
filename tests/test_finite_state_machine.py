@@ -16,51 +16,42 @@
 
 from dpp import state
 
-import abc
-import future.utils
 
+class SemaphoreLight(object):
+    def __init__(self, color):
+        self.color = color
 
-class SemaphoreLight(future.utils.with_metaclass(abc.ABCMeta, object)):
-    @abc.abstractmethod
     def display_light(self):
-        pass
+        print('{color} light on'.format(color=self.color))
 
 
 @state.fsm(interface=SemaphoreLight)
 class Semaphore(object):
-    @staticmethod
-    def state(obj):
-        return obj
+    green = state.State(SemaphoreLight, 'green')
+    yellow = state.State(SemaphoreLight, 'yellow')
+    red = state.State(SemaphoreLight, 'red')
 
-    @staticmethod
-    def event(current, next):
-        def decorator(func):
-            return func
-        return decorator
+    slowdown = state.Event(current='green', next='yellow')
+    stop = state.Event(current='yellow', next='red')
+    prepare = state.Event(current='red', next='yellow')
+    go = state.Event(current='yellow', next='green')
 
-@Semaphore.state
-class GreenLight(SemaphoreLight):
+
+class BlinkingLight(SemaphoreLight):
     def display_light(self):
-        print('Green light')
+        print('{color} blinking'.format(color=self.color))
 
 
-@Semaphore.state
-class YellowLight(SemaphoreLight):
-    def display_light(self):
-        print('Yellow light')
+def test_semaphore():
+    semaphore = Semaphore()
+    assert semaphore.state == SemaphoreLight('yellow')
+    semaphore.handle('go')
 
 
-@Semaphore.state
-class RedLight(SemaphoreLight):
-    def display_light(self):
-        print('Red light')
+def test_dynamic_changes():
+    semaphore = Semaphore()
+    semaphore.add('blinking', state.State(BlinkingLight, 'yellow'))
+    semaphore.add('blink', state.Event(current=('green', 'yellow', 'red'), next='blinking'))
+    semaphore.add('no_blink', state.Event(current='blinking', next='yellow'))
+    semaphore.commit()
 
-
-@Semaphore.event(current=GreenLight, next=YellowLight)
-class SlowDown(object):
-    pass
-
-
-semaphore = Semaphore()
-
-#semaphore.handle(SlowDown())
