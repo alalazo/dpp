@@ -22,7 +22,10 @@ class SemaphoreLight(object):
         self.color = color
 
     def display_light(self):
-        print('{color} light on'.format(color=self.color))
+        return '{color} light on'.format(color=self.color)
+
+    def __eq__(self, other):
+        return self.color == other.color
 
 
 @state.fsm(interface=SemaphoreLight)
@@ -31,27 +34,40 @@ class Semaphore(object):
     yellow = state.State(SemaphoreLight, 'yellow')
     red = state.State(SemaphoreLight, 'red')
 
-    slowdown = state.Event(current='green', next='yellow')
-    stop = state.Event(current='yellow', next='red')
-    prepare = state.Event(current='red', next='yellow')
-    go = state.Event(current='yellow', next='green')
+    slowdown = state.Event(current_state='green', next_state='yellow')
+    stop = state.Event(current_state='yellow', next_state='red')
+    prepare = state.Event(current_state='red', next_state='yellow')
+    go = state.Event(current_state='yellow', next_state='green')
+
+    __initial__ = yellow
 
 
 class BlinkingLight(SemaphoreLight):
     def display_light(self):
-        print('{color} blinking'.format(color=self.color))
+        return '{color} blinking'.format(color=self.color)
 
 
 def test_semaphore():
     semaphore = Semaphore()
+    assert Semaphore.yellow.display_light() == 'yellow light on'
     assert semaphore.state == SemaphoreLight('yellow')
-    semaphore.handle('go')
+    assert semaphore.state is Semaphore.yellow
+    assert semaphore.display_light() == 'yellow light on'
+    semaphore('go')
+    assert semaphore.state == SemaphoreLight('green')
+    assert semaphore.display_light() == 'green light on'
+    semaphore(Semaphore.slowdown)
+    assert semaphore.state == SemaphoreLight('yellow')
+    semaphore('stop')
+    assert semaphore.state == SemaphoreLight('red')
+    semaphore('go')  # Should do nothing from the current state
+    assert semaphore.state == SemaphoreLight('red')
 
 
-def test_dynamic_changes():
-    semaphore = Semaphore()
-    semaphore.add('blinking', state.State(BlinkingLight, 'yellow'))
-    semaphore.add('blink', state.Event(current=('green', 'yellow', 'red'), next='blinking'))
-    semaphore.add('no_blink', state.Event(current='blinking', next='yellow'))
-    semaphore.commit()
+#def test_dynamic_changes():
+#    semaphore = Semaphore()
+#    semaphore.add('blinking', state.State(BlinkingLight, 'yellow'))
+#    semaphore.add('blink', state.Event(current=('green', 'yellow', 'red'), next='blinking'))
+#    semaphore.add('no_blink', state.Event(current='blinking', next='yellow'))
+#    semaphore.commit()
 
