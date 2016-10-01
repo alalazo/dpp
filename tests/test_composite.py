@@ -105,6 +105,7 @@ class TestCompositeUsage:
         assert isinstance(composite_object, Base)
         assert issubclass(CompositeFromInterface, Base)
 
+
 class TestCompositeFailures:
     def test_wrong_container(self):
         with pytest.raises(TypeError):
