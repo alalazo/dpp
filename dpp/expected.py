@@ -13,12 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Provides the expected descriptor"""
 
 
 class Expected(object):
     """Descriptor that holds a value or the exception explaining
     why the value was not set
     """
+    # pylint: disable=too-few-public-methods
     def __init__(self, predicate, exc_cls=RuntimeError, message='Invalid value set', trigger_on_set=False):
         """
         Initializes the descriptor with the predicate and optional information
