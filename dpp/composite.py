@@ -29,7 +29,7 @@ import six
 from .inspection import is_private, is_special
 
 
-class _CompositeContainer(MutableSequence):
+class _CompositeContainer(MutableSequence):  # pylint: disable = too-many-ancestors
     """Container used for the composite implementation.
 
     This container is basically a list that permits to append items with a
