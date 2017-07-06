@@ -13,24 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-State pattern and common variations
-"""
+"""State pattern and common variations"""
 import inspect
 
 
 class State(object):
+    """Wrap the data for the current state and aggregate the information on transitions
+    to the next states.
     """
-    Wrap the data for the current state and aggregate the information on transitions to the next states
-    """
+
     # pylint: disable=too-few-public-methods
     def __init__(self, cls, *args):
         self.data = cls(*args)  # Wrapped object that will act as a state
-        self.transitions = {}  # Transitions from this to other states in the form {event : next_state}
+        self.transitions = {
+        }  # Transitions from this to other states in the form {event : next_state}
 
     def __getattr__(self, item):
-        """
-        If the attribute is not defined in the wrapper, delegate to the wrapped object
+        """If the attribute is not defined in the wrapper, delegate to the wrapped object.
 
         :param item: attribute requested
         :return: the attribute if it exists
@@ -51,6 +50,7 @@ class Event(object):
     """
     Represent an event that triggers a transition in the finite state machine
     """
+
     # pylint: disable=too-few-public-methods
     def __init__(self, current_state, next_state):
         self.current = current_state
@@ -61,6 +61,7 @@ class FiniteStateMachineBase(object):
     """
     Operations that are added to all finite state machines
     """
+
     # pylint: disable=too-few-public-methods
     def __call__(self, event):
         """
@@ -122,8 +123,10 @@ def fsm(interface=None, method_list=None):
         additional_attributes = {}  # Dictionary of additional attributes
         cls_attributes = inspect.classify_class_attrs(cls)  # Class attributes
         # Check the initial state
-        fsm_states = dict((item.name, item.object) for item in cls_attributes if isinstance(item.object, State))
-        fsm_events = dict((item.name, item.object) for item in cls_attributes if isinstance(item.object, Event))
+        fsm_states = dict((item.name, item.object)
+                          for item in cls_attributes if isinstance(item.object, State))
+        fsm_events = dict((item.name, item.object)
+                          for item in cls_attributes if isinstance(item.object, Event))
         additional_attributes['state'] = fsm_states.pop('__initial__')
         additional_attributes['states'] = fsm_states
         additional_attributes['events'] = fsm_events
@@ -135,4 +138,5 @@ def fsm(interface=None, method_list=None):
             fsm_states[current_state].transitions[event] = fsm_states[next_state]
 
         return type(cls.__name__, bases, additional_attributes)
+
     return cls_decorator

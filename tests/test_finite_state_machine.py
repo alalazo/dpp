@@ -63,11 +63,9 @@ def test_semaphore():
     semaphore('go')  # Should do nothing from the current state
     assert semaphore.state == SemaphoreLight('red')
 
-
 #def test_dynamic_changes():
 #    semaphore = Semaphore()
 #    semaphore.add('blinking', state.State(BlinkingLight, 'yellow'))
 #    semaphore.add('blink', state.Event(current=('green', 'yellow', 'red'), next='blinking'))
 #    semaphore.add('no_blink', state.Event(current='blinking', next='yellow'))
 #    semaphore.commit()
-

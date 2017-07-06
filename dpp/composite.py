@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Everything you need to employ the composite pattern"""
 from __future__ import absolute_import, print_function
 
@@ -36,6 +35,7 @@ class _CompositeContainer(MutableSequence):
     This container is basically a list that permits to append items with a
     name, and retrieve them by name. It doesn't permit to set them by name.
     """
+
     def __init__(self):
         super(_CompositeContainer, self).__init__()
         self._items = []
@@ -69,9 +69,7 @@ class _CompositeContainer(MutableSequence):
         return self._items[item]
 
     def _cleanup_named_items(self):
-        self._named_items = dict([
-            (k, v) for k, v in self._named_items.items() if v in self._items
-        ])
+        self._named_items = dict([(k, v) for k, v in self._named_items.items() if v in self._items])
 
     def __setitem__(self, key, value):
         # Delegate to list for setting
@@ -108,13 +106,11 @@ def composite(interface=None, method_list=None, reductions=None):
     # Check if at least one of the 'interface' or the 'method_list' arguments are defined
     if interface is None and method_list is None:
         raise TypeError(
-            "Either 'interface' or 'method_list' must be defined on a call to composite"
-        )
+            "Either 'interface' or 'method_list' must be defined on a call to composite")
 
     if reductions is not None and not isinstance(reductions, dict):
         raise TypeError(
-            "'reduction' should be a dictionary mapping method names to reduction functions"
-        )
+            "'reduction' should be a dictionary mapping method names to reduction functions")
 
     def cls_decorator(cls):
         # pylint: disable=missing-docstring
@@ -178,9 +174,8 @@ def composite(interface=None, method_list=None, reductions=None):
             interface_methods = [x for x in interface_methods if no_special_no_private(x.object)]
 
             # {name: IterateOver(name, method) for name, method in interface_methods.items()}
-            interface_methods_dict = dict(
-                (item.name, IterateOver(item.name, item.object)) for item in interface_methods
-            )
+            interface_methods_dict = dict((item.name, IterateOver(item.name, item.object))
+                                          for item in interface_methods)
             dictionary_for_type_call.update(interface_methods_dict)
             bases = (cls, interface, _CompositeContainer)
 
