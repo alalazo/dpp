@@ -105,6 +105,61 @@ class TestCompositeUsage:
         assert isinstance(composite_object, Base)
         assert issubclass(CompositeFromInterface, Base)
 
+    def test_get_item(self, composite_items):
+        @composite(interface=Base)
+        class CompositeFromInterface(object):
+            pass
+
+        one, two = composite_items
+        composite_object = CompositeFromInterface()
+
+        composite_object.append(one, 'one')
+        composite_object.append(two, 'two')
+
+        # Check indexed access
+        assert composite_object[0] is one
+        assert composite_object[1] is two
+
+        # Check access by name
+        assert composite_object['one'] is one
+        assert composite_object['two'] is two
+
+        # Check contains
+        assert one in composite_object
+        assert two in composite_object
+        assert 'one' in composite_object
+        assert 'two' in composite_object
+
+        # Check assignment
+        composite_object[:] = [two, one]
+
+        assert composite_object[0] is two
+        assert composite_object[1] is one
+        assert composite_object['one'] is one
+        assert composite_object['two'] is two
+
+        composite_object[:] = [two, two]
+
+        assert composite_object[0] is two
+        assert composite_object[1] is two
+        assert 'one' not in composite_object
+        assert composite_object['two'] is two
+
+        # Check deletion
+
+        assert len(composite_object) == 2
+
+        del composite_object[0]
+
+        assert len(composite_object) == 1
+        assert composite_object[0] == two
+        assert 'two' in composite_object
+
+        del composite_object[0]
+
+        assert len(composite_object) == 0
+        assert 'two' not in composite_object
+
 
 class TestCompositeFailures:
     def test_wrong_container(self):

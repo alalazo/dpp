@@ -22,11 +22,9 @@ import abc
 
 
 class Base(future.utils.with_metaclass(abc.ABCMeta, object)):
-    @abc.abstractmethod
     def get_int(self):
         pass
 
-    @abc.abstractmethod
     def get_string(self):
         pass
 
