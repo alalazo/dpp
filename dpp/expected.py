@@ -20,8 +20,13 @@ class Expected(object):
     """Descriptor that holds a value or the exception explaining
     why the value was not set
     """
+
     # pylint: disable=too-few-public-methods
-    def __init__(self, predicate, exc_cls=RuntimeError, message='Invalid value set', trigger_on_set=False):
+    def __init__(self,
+                 predicate,
+                 exc_cls=RuntimeError,
+                 message='Invalid value set',
+                 trigger_on_set=False):
         """
         Initializes the descriptor with the predicate and optional information
 

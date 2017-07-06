@@ -71,6 +71,6 @@ setup(
     ],
     keywords='design-patterns development',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['future', 'pytest'],
+    install_requires=['future', 'six'],
     package_data={}
 )

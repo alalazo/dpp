@@ -1,13 +1,23 @@
+# Only build master and develop on push; do not build every branch.
+branches:
+  only:
+    - master
+    - develop
+    - /^releases\/.*$/
+
 sudo: false
 language: python
 python:
+  - "3.6"
   - "3.5"
   - "3.4"
+  - "3.3"
   - "2.7"
   - "2.6"
 
 # command to install dependencies
-install: pip install tox-travis
+install:
+  - pip install tox-travis
 
 # command to run tests
 script: tox

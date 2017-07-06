@@ -20,19 +20,15 @@ import pytest
 
 
 class A(object):
-    lazy_value = expected.Expected(
-        predicate=lambda x: isinstance(x, str),
-        exc_cls=TypeError,
-        message='\'{value}\' is not of type \'str\'',
-        trigger_on_set=False
-    )
+    lazy_value = expected.Expected(predicate=lambda x: isinstance(x, str),
+                                   exc_cls=TypeError,
+                                   message='\'{value}\' is not of type \'str\'',
+                                   trigger_on_set=False)
 
-    greedy_value = expected.Expected(
-        predicate=lambda x: isinstance(x, str),
-        exc_cls=TypeError,
-        message='\'{value}\' is not of type \'str\'',
-        trigger_on_set=True
-    )
+    greedy_value = expected.Expected(predicate=lambda x: isinstance(x, str),
+                                     exc_cls=TypeError,
+                                     message='\'{value}\' is not of type \'str\'',
+                                     trigger_on_set=True)
 
 
 def test_expected():

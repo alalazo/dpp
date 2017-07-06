@@ -22,11 +22,9 @@ import abc
 
 
 class Base(future.utils.with_metaclass(abc.ABCMeta, object)):
-    @abc.abstractmethod
     def get_int(self):
         pass
 
-    @abc.abstractmethod
     def get_string(self):
         pass
 
@@ -56,10 +54,9 @@ def composite_abstract_items():
 
 class TestCompositeReduction:
     def test_reduction(self, composite_abstract_items):
-
         class Multiplier(object):
             def __init__(self):
-                self.value=1
+                self.value = 1
 
             def __call__(self, value):
                 self.value *= value
@@ -89,6 +86,7 @@ class TestCompositeReduction:
 
     def test_wrong_reduction_type(self):
         with pytest.raises(TypeError):
+
             @composite(interface=Base, reductions=[])
             class CompositeFromAbcInterface(object):
                 pass
