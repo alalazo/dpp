@@ -37,6 +37,7 @@ class _CompositeContainer(MutableSequence):
     name, and retrieve them by name. It doesn't permit to set them by name.
     """
     def __init__(self):
+        super(_CompositeContainer, self).__init__()
         self._items = []
         self._named_items = {}
 
